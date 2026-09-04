@@ -1,77 +1,358 @@
 /* ============================================================
-   styles.css — this is YOURS to change. That is the point.
-   Every value below is a decision somebody made. Change one,
-   commit, and look at what happened.
+   Modern Glassmorphism Portfolio
+   Liquid Glass Interactive Design with Smooth Animations
    ============================================================ */
 
-/* The custom properties. Change a colour ONCE here and it
-   changes everywhere it is used further down. */
+/* Custom Properties - Modern Color Palette */
 :root {
-  --ink:        #1a1a1a;   /* body text */
-  --muted:      #5a6472;   /* quieter text */
-  --accent:     #0a6373;   /* links and rules — make this yours */
-  --paper:      #ffffff;
-  --line:       #e2e6ec;
-  --measure:    34rem;     /* how wide a line of text gets before it wraps */
+  --ink: #0f1419;
+  /* primary text */
+  --muted: #6b7280;
+  /* secondary text */
+  --accent: #3b82f6;
+  /* links & highlights - vibrant blue */
+  --accent-alt: #8b5cf6;
+  /* secondary accent - purple */
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-bg-dark: rgba(20, 20, 30, 0.1);
+  --paper: #ffffff;
+  --measure: 34rem;
 }
 
-/* A sensible reset. Without border-box, padding makes boxes
-   wider than you asked for, and nothing lines up. */
-*, *::before, *::after { box-sizing: border-box; }
+/* Box sizing reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
+/* Animated Gradient Background */
 body {
-  margin: 0 auto;
+  margin: 0;
   padding: 3rem 1.25rem 4rem;
   max-width: var(--measure);
-  background: var(--paper);
+  margin: 0 auto;
+
+  /* Vibrant animated gradient background */
+  background: linear-gradient(-45deg,
+      #ee7752,
+      #e73c7e,
+      #23a6d5,
+      #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+
   color: var(--ink);
-  font: 1rem/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 1rem/1.75 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Gradient animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Header with glassmorphism */
+header {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.8s ease-out;
+  position: relative;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  border-radius: 20px;
+  pointer-events: none;
 }
 
 h1 {
   margin: 0;
-  font-size: 2.15rem;
+  font-size: 2.5rem;
   line-height: 1.15;
   letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
 }
 
 .tagline {
-  margin: 0.5rem 0 0;
-  color: var(--muted);
-  font-size: 1.05rem;
+  margin: 0.8rem 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Main sections with glassmorphism cards */
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+section {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+section:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+section:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+section:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+section:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.15);
 }
 
 h2 {
-  margin: 2.75rem 0 0.75rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.82rem;
+  margin: 0 0 1.5rem 0;
+  padding: 0;
+  font-size: 1.3rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-alt), transparent);
+  border-radius: 1px;
+}
+
+/* List styling */
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  margin-bottom: 1.2rem;
+  padding-left: 2rem;
+  position: relative;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+}
+
+li:hover {
+  transform: translateX(8px);
   color: var(--accent);
 }
 
-ul { margin: 0; padding-left: 1.1rem; }
-li { margin-bottom: 0.6rem; }
+li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: bold;
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: transform 0.3s ease;
+}
 
+li:hover::before {
+  transform: translateX(4px);
+}
+
+/* Paragraph styling */
+p {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Link styling */
 a {
   color: var(--accent);
-  text-underline-offset: 3px;
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  transition: all 0.3s ease;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
 }
-a:hover { text-decoration: none; }
 
+a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+a:hover {
+  color: var(--accent-alt);
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+/* Footer styling */
 footer {
-  margin-top: 3.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.85rem;
+  margin-top: 4rem;
+  padding: 2rem;
+  background: var(--glass-bg-dark);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  text-align: center;
+  transition: all 0.4s ease;
+  animation: slideUp 0.8s ease-out 0.8s forwards;
+  opacity: 0;
 }
 
-/* Someone reading this on a phone is the common case, not the
-   edge case. Test it there before you call the page done. */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+footer:hover {
+  background: var(--glass-bg);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
 @media (max-width: 30rem) {
-  body { padding-top: 2rem; }
-  h1   { font-size: 1.8rem; }
+  body {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  header {
+    padding: 2rem 1.5rem;
+  }
+
+  section {
+    padding: 1.5rem;
+  }
+
+  li {
+    padding-left: 1.5rem;
+    font-size: 1rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
 }
