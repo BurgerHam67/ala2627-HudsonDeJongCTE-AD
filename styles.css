@@ -512,6 +512,21 @@ h1 em {
   animation-fill-mode: both;
 }
 
+.swinging .batter-body {
+  animation: batter-torso-swing .72s cubic-bezier(.3, .05, .3, 1);
+  animation-fill-mode: both;
+}
+
+.swinging .batter-leg-left {
+  animation: front-leg-swing .72s cubic-bezier(.3, .05, .3, 1);
+  animation-fill-mode: both;
+}
+
+.swinging .batter-leg-right {
+  animation: back-leg-swing .72s cubic-bezier(.3, .05, .3, 1);
+  animation-fill-mode: both;
+}
+
 .ball {
   position: absolute;
   left: calc(50% - 9rem);
@@ -985,49 +1000,118 @@ kbd {
 
 @keyframes batter-swing {
 
-  0%,
-  100% {
+  0% {
     transform: translateX(var(--batter-offset)) translateY(0) scale(.95) rotate(0);
   }
 
-  35% {
-    transform: translateX(var(--batter-offset)) translateY(-.3rem) scale(.95) rotate(-12deg);
+  25% {
+    transform: translateX(calc(var(--batter-offset) - .15rem)) translateY(-.18rem) scale(.95) rotate(-7deg);
   }
 
-  67% {
-    transform: translateX(var(--batter-offset)) translateY(.15rem) scale(.95) rotate(28deg);
+  55% {
+    transform: translateX(calc(var(--batter-offset) + .2rem)) translateY(.12rem) scale(.95) rotate(16deg);
+  }
+
+  78%,
+  100% {
+    transform: translateX(calc(var(--batter-offset) + .05rem)) translateY(.08rem) scale(.95) rotate(30deg);
   }
 }
 
 @keyframes bat-swing {
 
-  0%,
-  100% {
+  0% {
     transform: rotate(-38deg);
   }
 
-  35% {
-    transform: rotate(-58deg);
+  25% {
+    transform: rotate(-62deg);
   }
 
-  67% {
-    transform: rotate(68deg);
+  52% {
+    transform: rotate(5deg);
+  }
+
+  78%,
+  100% {
+    transform: rotate(72deg);
   }
 }
 
 @keyframes batter-arm-swing {
 
-  0%,
-  100% {
+  0% {
     transform: rotate(-58deg);
   }
 
-  35% {
-    transform: rotate(-82deg);
+  25% {
+    transform: rotate(-76deg);
   }
 
-  67% {
+  52% {
+    transform: rotate(-18deg);
+  }
+
+  78%,
+  100% {
+    transform: rotate(38deg);
+  }
+}
+
+@keyframes batter-torso-swing {
+  0% {
+    transform: rotate(12deg);
+  }
+
+  25% {
+    transform: rotate(4deg);
+  }
+
+  55% {
+    transform: rotate(25deg);
+  }
+
+  78%,
+  100% {
     transform: rotate(34deg);
+  }
+}
+
+@keyframes front-leg-swing {
+  0% {
+    transform: rotate(17deg);
+  }
+
+  25% {
+    transform: rotate(8deg);
+  }
+
+  55% {
+    transform: rotate(-7deg);
+  }
+
+  78%,
+  100% {
+    transform: rotate(-22deg);
+  }
+}
+
+@keyframes back-leg-swing {
+  0% {
+    transform: rotate(-18deg);
+  }
+
+  25% {
+    transform: rotate(-26deg);
+  }
+
+  55% {
+    transform: rotate(-34deg);
+  }
+
+  78%,
+  100% {
+    transform: rotate(-42deg);
   }
 }
 
