@@ -667,6 +667,60 @@ kbd {
   padding: 0 1.5rem 1.5rem;
 }
 
+.progress-card {
+  padding: 1.1rem 0 1.2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.progress-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.progress-heading h2 {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: .95;
+}
+
+.progress-heading>strong {
+  color: var(--green);
+  font: 700 1.25rem/1 "Barlow Condensed", sans-serif;
+}
+
+.season-bar {
+  height: .65rem;
+  margin-top: 1rem;
+  overflow: hidden;
+  border-radius: 99rem;
+  background: #e3ebe4;
+}
+
+.season-bar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), #78ad87);
+  transition: width .35s ease;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: .45rem;
+  color: var(--muted);
+  font-size: .6rem;
+}
+
+.progress-meta span:first-child {
+  color: var(--green);
+  font-weight: 700;
+}
+
 .tab-row {
   display: flex;
   gap: 1.5rem;
