@@ -497,10 +497,19 @@ h1 em {
 
 .swinging .batter {
   animation: batter-swing .72s cubic-bezier(.3, .05, .3, 1);
+  animation-fill-mode: both;
+  will-change: transform;
 }
 
 .swinging .bat {
   animation: bat-swing .72s cubic-bezier(.3, .05, .3, 1);
+  animation-fill-mode: both;
+  will-change: transform;
+}
+
+.swinging .batter-arm {
+  animation: batter-arm-swing .72s cubic-bezier(.3, .05, .3, 1);
+  animation-fill-mode: both;
 }
 
 .ball {
@@ -978,15 +987,15 @@ kbd {
 
   0%,
   100% {
-    transform: translateX(var(--batter-offset)) scale(.95) rotate(0);
+    transform: translateX(var(--batter-offset)) translateY(0) scale(.95) rotate(0);
   }
 
   35% {
-    transform: translateX(var(--batter-offset)) scale(.95) rotate(-8deg);
+    transform: translateX(var(--batter-offset)) translateY(-.3rem) scale(.95) rotate(-12deg);
   }
 
   67% {
-    transform: translateX(var(--batter-offset)) scale(.95) rotate(17deg);
+    transform: translateX(var(--batter-offset)) translateY(.15rem) scale(.95) rotate(28deg);
   }
 }
 
@@ -1002,7 +1011,23 @@ kbd {
   }
 
   67% {
-    transform: rotate(52deg);
+    transform: rotate(68deg);
+  }
+}
+
+@keyframes batter-arm-swing {
+
+  0%,
+  100% {
+    transform: rotate(-58deg);
+  }
+
+  35% {
+    transform: rotate(-82deg);
+  }
+
+  67% {
+    transform: rotate(34deg);
   }
 }
 
