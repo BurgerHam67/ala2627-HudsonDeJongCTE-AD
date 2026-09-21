@@ -57,8 +57,11 @@
               class="batter-leg batter-leg-left"></span><span class="batter-leg batter-leg-right"></span><span
               class="bat"></span></div>
           <div class="ball" id="ball" aria-hidden="true"></div>
-          <button class="swing-button" id="swing-button" type="button"><span class="swing-icon">↗</span><span>SWING FOR
-              THE FENCES</span><small><kbd>SPACE</kbd> or click</small></button>
+          <div class="timing-guide" aria-live="polite"><strong id="pitch-message">WATCH THE PITCH</strong>
+            <div class="pitch-meter" aria-hidden="true"><span id="pitch-meter-fill"></span><i></i></div>
+          </div>
+          <button class="swing-button" id="swing-button" type="button"><span class="swing-icon">↗</span><span>TIME YOUR
+              SWING</span><small><kbd>SPACE</kbd> or click</small></button>
           <div class="base base-home"></div>
           <div class="base base-first"></div>
           <div class="base base-second"></div>
