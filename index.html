@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Big Fly Baseball</title>
-  <meta name="description" content="Build a baseball powerhouse one homerun at a time.">
+  <title>DIRTLINE // Bike Lab</title>
+  <meta name="description" content="Lean, launch, and land in two dirt-bike skill modes.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -16,139 +16,87 @@
 </head>
 
 <body>
-  <header class="site-header">
-    <a class="brand" href="#top" aria-label="Big Fly Baseball home"><span class="brand-mark">BF</span><span><strong>BIG
-          FLY</strong><small>BASEBALL CLUB</small></span></a>
-    <div class="header-status"><span class="live-dot"></span> Season 01 <span class="status-divider"></span> Rookie
-      League</div>
-    <button class="reset-button" id="reset-game" type="button">Reset season</button>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Dirtline home"><span
+        class="brand-mark">D</span><span><strong>DIRTLINE</strong><small>BIKE LAB / 01</small></span></a>
+    <div class="top-status"><span class="status-dot"></span><span id="run-status">READY TO RIDE</span></div>
+    <button class="reset-button" id="reset-run" type="button">Reset run</button>
   </header>
+
   <main id="top">
-    <section class="scoreboard" aria-label="Team scoreboard">
+    <section class="intro-row">
       <div>
-        <p class="eyebrow">Your ballclub</p>
-        <h1>Send it <em>deep.</em></h1>
-        <p class="hero-copy">Build your lineup, upgrade your swing, and chase the longest ball in the league.</p>
+        <p class="eyebrow">Two wheels. No shortcuts.</p>
+        <h1>Find your <em>line.</em></h1>
+        <p class="intro-copy">Choose a challenge, control your lean, and make the landing look easy.</p>
       </div>
-      <div class="baseball-art" aria-hidden="true">
-        <span class="baseball-art-ball"></span>
-        <span class="baseball-art-stitch stitch-one"></span>
-        <span class="baseball-art-stitch stitch-two"></span>
-        <span class="baseball-art-label">PLAY<br>BIG</span>
-      </div>
-      <div class="scoreboard-numbers">
-        <div><span>Homeruns</span><strong id="home-runs">0</strong></div>
-        <div><span>Fans</span><strong id="fans">0</strong></div>
-        <div><span>Team OVR</span><strong id="team-ovr">61</strong></div>
+      <div class="helmet-art" aria-hidden="true"><span class="helmet-shell"></span><span
+          class="helmet-visor"></span><span class="helmet-stripe"></span><b>DL</b></div>
+      <div class="stat-strip" aria-label="Run statistics">
+        <div><span>Score</span><strong id="score-value">0</strong></div>
+        <div><span>Best</span><strong id="best-value">0</strong></div>
+        <div><span>Run</span><strong id="run-value">01</strong></div>
       </div>
     </section>
-    <section class="game-layout" aria-label="Big Fly game">
-      <div class="diamond-panel">
-        <div class="panel-topline"><span>AT THE PLATE</span><span id="streak-label">0 HR streak</span></div>
-        <div class="field">
-          <div class="field-lines"></div>
-          <div class="scoreboard-sign"><span>BIG FLY</span><strong id="last-distance">READY?</strong><small>FEET</small>
-          </div>
-          <div class="pitcher"><span class="pitcher-head"></span><span class="pitcher-cap"></span><span
-              class="pitcher-body"></span><span class="pitcher-arm"></span><span
-              class="pitcher-leg pitcher-leg-left"></span><span class="pitcher-leg pitcher-leg-right"></span></div>
-          <div class="batter"><span class="batter-head"></span><span class="batter-cap"></span><span
-              class="batter-body"></span><span class="batter-arm"></span><span
-              class="batter-leg batter-leg-left"></span><span class="batter-leg batter-leg-right"></span><span
-              class="bat"></span></div>
-          <div class="ball" id="ball" aria-hidden="true"></div>
-          <div class="timing-guide" aria-live="polite"><strong id="pitch-message">WATCH THE PITCH</strong>
-            <div class="pitch-meter" aria-hidden="true"><span id="pitch-meter-fill"></span><i></i></div>
-          </div>
-          <button class="swing-button" id="swing-button" type="button"><span class="swing-icon">↗</span><span>TIME YOUR
-              SWING</span><small><kbd>SPACE</kbd> or click</small></button>
-          <div class="base base-home"></div>
-          <div class="base base-first"></div>
-          <div class="base base-second"></div>
-          <div class="base base-third"></div>
+
+    <section class="mode-picker" aria-labelledby="mode-title">
+      <div class="picker-heading">
+        <div>
+          <p class="eyebrow">Pick your challenge</p>
+          <h2 id="mode-title">Ride modes</h2>
         </div>
-        <div class="game-foot"><span id="play-by-play">Step up to the plate.</span><span class="multiplier"
-            id="multiplier">+1 per swing</span></div>
+        <p class="mode-tip">A / D to control the bike</p>
       </div>
-      <aside class="control-panel">
-        <section class="progress-card" aria-label="Season progression">
-          <div class="progress-heading">
-            <div>
-              <p class="eyebrow">Season progression</p>
-              <h2>Road to the majors</h2>
-            </div><strong>LVL <span id="season-level">1</span></strong>
+      <div class="mode-grid">
+        <button class="mode-card active" data-mode="wheelie" type="button"><span class="mode-number">01</span><span
+            class="mode-icon wheelie-icon">↗</span><span class="mode-name">Wheelie</span><span
+            class="mode-description">Hold the balance point down the street. Stay smooth and keep the front wheel
+            up.</span><span class="mode-cta">Ride street <b>→</b></span></button>
+        <button class="mode-card" data-mode="jumps" type="button"><span class="mode-number">02</span><span
+            class="mode-icon jumps-icon">⌁</span><span class="mode-name">Jumps</span><span
+            class="mode-description">Launch huge dirt jumps, spin flips in the air, and stick the landing.</span><span
+            class="mode-cta">Hit the line <b>→</b></span></button>
+      </div>
+    </section>
+
+    <section class="game-panel" aria-label="Dirt-bike game">
+      <div class="game-toolbar">
+        <div><span class="toolbar-label">LIVE SESSION</span><strong id="mode-label">WHEELIE / STREET RUN</strong></div>
+        <div class="toolbar-readout"><span id="distance-label">DISTANCE</span><strong id="distance-value">0 m</strong>
+        </div>
+        <div class="toolbar-readout"><span id="trick-label">BALANCE</span><strong id="trick-value">0%</strong></div>
+      </div>
+      <div class="canvas-wrap"><canvas id="game-canvas" aria-label="Dirt-bike game area"></canvas>
+        <div class="canvas-message" id="canvas-message"><strong>READY WHEN YOU ARE</strong><span>Press A or D to start
+            riding</span></div>
+        <div class="touch-controls" aria-label="Touch controls"><button data-key="a" type="button"
+            aria-label="Lean back with A">A</button><button data-key="d" type="button"
+            aria-label="Lean forward with D">D</button></div>
+      </div>
+      <div class="game-footer"><span id="game-message">Select a mode, then press A or D.</span><span><kbd>A</kbd> lean
+          back <kbd>D</kbd> lean forward</span></div>
+    </section>
+
+    <section class="how-to">
+      <div>
+        <p class="eyebrow">The controls</p>
+        <h2>Small inputs.<br><em>Big consequences.</em></h2>
+      </div>
+      <div class="control-notes">
+        <article><kbd>A</kbd>
+          <div><strong>Lean back / rotate left</strong>
+            <p>Wheelies need a calm hand. Jumps need a clean takeoff.</p>
           </div>
-          <div class="season-bar"><span id="season-progress-fill"></span></div>
-          <div class="progress-meta"><span id="season-progress-text">0 / 20 XP</span><span>Level up: +10 coins · +25
-              fans</span></div>
-        </section>
-        <div class="tab-row"><a class="active" href="#upgrades">Upgrades</a><a href="#roster">Roster</a></div>
-        <section class="upgrade-section" id="upgrades" aria-labelledby="upgrade-title">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Make every swing count</p>
-              <h2 id="upgrade-title">Batting lab</h2>
-            </div><span class="currency"><span class="coin">$</span><strong id="coins">25</strong></span>
+        </article>
+        <article><kbd>D</kbd>
+          <div><strong>Lean forward / rotate right</strong>
+            <p>Set the bike for landing before the wheels touch down.</p>
           </div>
-          <div class="upgrade-list">
-            <article class="upgrade-card">
-              <div class="upgrade-icon bat-icon">✦</div>
-              <div class="upgrade-info">
-                <h3>Contact</h3>
-                <p>More consistent barrels</p>
-                <div class="level-bar"><span id="contact-bar"></span></div>
-              </div><button class="upgrade-button" data-upgrade="contact" type="button"><span>LVL <b
-                    id="contact-level">1</b></span><strong id="contact-cost">10</strong></button>
-            </article>
-            <article class="upgrade-card">
-              <div class="upgrade-icon power-icon">↯</div>
-              <div class="upgrade-info">
-                <h3>Power</h3>
-                <p>Launch it farther</p>
-                <div class="level-bar"><span id="power-bar"></span></div>
-              </div><button class="upgrade-button" data-upgrade="power" type="button"><span>LVL <b
-                    id="power-level">1</b></span><strong id="power-cost">15</strong></button>
-            </article>
-            <article class="upgrade-card">
-              <div class="upgrade-icon crowd-icon">♟</div>
-              <div class="upgrade-info">
-                <h3>Stadium</h3>
-                <p>Grow your fanbase</p>
-                <div class="level-bar"><span id="stadium-bar"></span></div>
-              </div><button class="upgrade-button" data-upgrade="stadium" type="button"><span>LVL <b
-                    id="stadium-level">1</b></span><strong id="stadium-cost">20</strong></button>
-            </article>
-          </div>
-        </section>
-        <section class="roster-section" id="roster" aria-labelledby="roster-title">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Stack the lineup</p>
-              <h2 id="roster-title">Sign a legend</h2>
-            </div><span class="roster-count" id="roster-count">1 / 3</span>
-          </div>
-          <div class="player-list">
-            <article class="player-card signed">
-              <div class="player-number">27</div>
-              <div class="player-info"><strong>Mike Trout</strong><span>Center Field · +5 power</span></div><span
-                class="signed-label">SIGNED</span>
-            </article>
-            <article class="player-card">
-              <div class="player-number">24</div>
-              <div class="player-info"><strong>Ken Griffey Jr.</strong><span>Center Field · +8 power</span></div><button
-                class="sign-button" data-player="griffey" type="button">$80</button>
-            </article>
-            <article class="player-card">
-              <div class="player-number">42</div>
-              <div class="player-info"><strong>Jackie Robinson</strong><span>Second Base · +6 fans</span></div><button
-                class="sign-button" data-player="jackie" type="button">$100</button>
-            </article>
-          </div>
-        </section>
-      </aside>
+        </article>
+      </div>
     </section>
   </main>
-  <footer class="site-footer"><span>BIG FLY BASEBALL</span><span>Play ball. Build a dynasty.</span></footer>
+  <footer class="footer"><span>DIRTLINE BIKE LAB</span><span>Find the balance. Own the landing.</span></footer>
 </body>
 
 </html>

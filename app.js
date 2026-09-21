@@ -1,60 +1,36 @@
-const gameKey = "big-fly-baseball";
-const defaultState = { homeRuns: 0, fans: 0, coins: 25, streak: 0, bestStreak: 0, level: 1, xp: 0, upgrades: { contact: 1, power: 1, stadium: 1 }, players: { griffey: false, jackie: false } };
-let state = loadState();
-state.level ??= 1;
-state.xp ??= 0;
-state.bestStreak ??= state.streak ?? 0;
+const canvas = document.querySelector("#game-canvas");
+const context = canvas.getContext("2d");
+const modeButtons = document.querySelectorAll("[data-mode]");
+const keys = { a: false, d: false };
+const game = { mode: "wheelie", running: false, crashed: false, score: 0, best: Number(localStorage.getItem("dirtline-best") || 0), distance: 0, airTime: 0, flips: 0, lastTime: 0, width: 0, height: 0, groundY: 0, bike: { x: 160, y: 0, vy: 0, angle: 0, angularVelocity: 0, speed: 0 }, terrain: [] };
+
+const colors = { ink: "#263435", green: "#367564", darkGreen: "#1e4942", orange: "#e66f42", yellow: "#f1c35e", dirt: "#a87854", dirtDark: "#79523f", sky: "#b9dbe0", cloud: "rgba(255,255,255,.55)" };
 const $ = (selector) => document.querySelector(selector);
-let pitchStart = performance.now();
-let pitchPhase = 0;
-let lastSwingPitch = -1;
-function loadState() { try { return { ...defaultState, ...JSON.parse(localStorage.getItem(gameKey)) }; } catch { return structuredClone(defaultState); } }
-function saveState() { localStorage.setItem(gameKey, JSON.stringify(state)); }
-function formatNumber(number) { return number.toLocaleString("en-US"); }
-function upgradeCost(type) { return { contact: 10, power: 15, stadium: 20 }[type] * state.upgrades[type]; }
-function difficultyLevel() { return Math.min(8, Math.max(0, state.level - 1)); }
-function pitchDuration() { return Math.max(1050, 1900 - difficultyLevel() * 100); }
-function timingWindow() { const difficulty = difficultyLevel(); return { start: Math.max(.5, .68 - state.upgrades.contact * .025 + difficulty * .006), end: Math.min(.94, .82 + state.upgrades.contact * .02 - difficulty * .006) }; }
-function xpToNextLevel() { return 20 + (state.level - 1) * 15; }
-function addExperience(amount) { state.xp += amount; let leveledUp = false; while (state.xp >= xpToNextLevel()) { state.xp -= xpToNextLevel(); state.level += 1; state.coins += 10; state.fans += 25; leveledUp = true; } return leveledUp; }
-function streakMultiplier(streak) { return Math.min(3, 1 + Math.floor(streak / 3) * .25); }
-function teamOverall() { const upgradePoints = Object.values(state.upgrades).reduce((total, level) => total + level - 1, 0) * 2; const playerPoints = (state.players.griffey ? 8 : 0) + (state.players.jackie ? 4 : 0); return 61 + upgradePoints + playerPoints; }
-function render() {
-  $("#home-runs").textContent = formatNumber(state.homeRuns); $("#fans").textContent = formatNumber(state.fans); $("#coins").textContent = formatNumber(state.coins); $("#team-ovr").textContent = teamOverall(); $("#streak-label").textContent = `${state.streak} HR streak · best ${state.bestStreak}`; $("#roster-count").textContent = `${1 + Object.values(state.players).filter(Boolean).length} / 3`;
-  $("#season-level").textContent = state.level; $("#season-progress-text").textContent = `${state.xp} / ${xpToNextLevel()} XP`; $("#season-progress-fill").style.width = `${Math.min(100, (state.xp / xpToNextLevel()) * 100)}%`;
-  ["contact", "power", "stadium"].forEach((type) => { const level = state.upgrades[type]; $(`#${type}-level`).textContent = level; $(`#${type}-cost`).textContent = upgradeCost(type); $(`#${type}-bar`).style.width = `${Math.min(100, level * 20)}%`; const button = $(`[data-upgrade="${type}"]`); button.disabled = state.coins < upgradeCost(type); button.setAttribute("aria-label", `Upgrade ${type} for ${upgradeCost(type)} coins`); });
-  ["griffey", "jackie"].forEach((player) => { const button = $(`[data-player="${player}"]`); if (state.players[player]) { button.textContent = "SIGNED"; button.disabled = true; } else { button.textContent = player === "griffey" ? "$80" : "$100"; button.disabled = state.coins < Number(button.textContent.replace("$", "")); } });
-}
-function animatePitch(now) {
-  const duration = pitchDuration(); const { start: windowStart, end: windowEnd } = timingWindow();
-  pitchPhase = ((now - pitchStart) % duration) / duration;
-  const inWindow = pitchPhase >= windowStart && pitchPhase <= windowEnd;
-  $("#pitch-meter-fill").style.width = `${pitchPhase * 100}%`;
-  $(".pitch-meter").style.setProperty("--zone-left", `${windowStart * 100}%`);
-  $(".pitch-meter").style.setProperty("--zone-right", `${(1 - windowEnd) * 100}%`);
-  $("#ball").style.setProperty("--pitch-progress", pitchPhase);
-  $(".timing-guide").classList.toggle("in-zone", inWindow);
-  $("#pitch-message").textContent = inWindow ? "SWING NOW" : "WATCH THE PITCH";
-  window.requestAnimationFrame(animatePitch);
-}
-function swing() {
-  const duration = pitchDuration(); const pitchAtSwing = Math.floor((performance.now() - pitchStart) / duration);
-  if (pitchAtSwing === lastSwingPitch) {
-    $("#play-by-play").textContent = "Wait for the next pitch.";
-    $("#multiplier").textContent = "Next pitch loading";
-    return;
-  }
-  lastSwingPitch = pitchAtSwing;
-  pitchPhase = ((performance.now() - pitchStart) % duration) / duration;
-  const power = state.upgrades.power; const contact = state.upgrades.contact; const { start: windowStart, end: windowEnd } = timingWindow(); const wellTimed = pitchPhase >= windowStart && pitchPhase <= windowEnd; const early = pitchPhase < windowStart; const isHomer = wellTimed && Math.random() < Math.min(.98, .62 + contact * .08); const distance = 320 + Math.floor(Math.random() * 90) + power * 24 + (state.players.griffey ? 25 : 0); const nextStreak = isHomer ? state.streak + 1 : 0; const combo = streakMultiplier(nextStreak); const earnedCoins = isHomer ? Math.round((2 + Math.floor(power / 2)) * combo) : 0; const earnedFans = isHomer ? Math.round((8 + state.upgrades.stadium * 3 + (state.players.jackie ? 6 : 0)) * combo) : 1;
-  const timingCenter = (windowStart + windowEnd) / 2; const perfect = isHomer && Math.abs(pitchPhase - timingCenter) <= (windowEnd - windowStart) * .2; const bonusCoins = perfect ? 2 : 0; const bonusFans = perfect ? 5 : 0;
-  const xpEarned = isHomer ? (perfect ? 12 : 8) : 1; const leveledUp = addExperience(xpEarned); const resultMessage = leveledUp ? `LEVEL UP! Welcome to level ${state.level}.` : (perfect ? `PERFECT CONTACT! ${distance} feet and gone.` : (isHomer ? `CRACK! ${distance} feet and gone.` : (early ? "Too early. Let the pitch travel." : "Too late. Watch it into the mitt.")));
-  state.homeRuns += isHomer ? 1 : 0; state.streak = nextStreak; state.bestStreak = Math.max(state.bestStreak, state.streak); state.coins += earnedCoins + bonusCoins; state.fans += earnedFans + bonusFans; $("#last-distance").textContent = isHomer ? distance : "MISS"; $("#play-by-play").textContent = resultMessage; $("#multiplier").textContent = isHomer ? `x${combo.toFixed(2)} combo · +${earnedCoins + bonusCoins} coins · +${earnedFans + bonusFans} fans` : `+${xpEarned} XP`;
-  const field = $(".field"); $(".diamond-panel").classList.remove("hit"); void $(".diamond-panel").offsetWidth; $(".diamond-panel").classList.add("hit"); field.classList.remove("swinging"); void field.offsetWidth; field.classList.add("swinging"); window.setTimeout(() => field.classList.remove("swinging"), 720); $("#ball").classList.remove("fly"); void $("#ball").offsetWidth; $("#ball").classList.add("fly"); saveState(); render();
-}
-function buyUpgrade(event) { const type = event.currentTarget.dataset.upgrade; const cost = upgradeCost(type); if (state.coins < cost) return; state.coins -= cost; state.upgrades[type] += 1; saveState(); render(); }
-function signPlayer(event) { const player = event.currentTarget.dataset.player; const cost = player === "griffey" ? 80 : 100; if (state.players[player] || state.coins < cost) return; state.coins -= cost; state.players[player] = true; saveState(); render(); }
-$("#swing-button").addEventListener("click", swing); document.addEventListener("keydown", (event) => { if (event.code === "Space" && event.target.tagName !== "BUTTON") { event.preventDefault(); swing(); } }); document.querySelectorAll(".upgrade-button").forEach((button) => button.addEventListener("click", buyUpgrade)); document.querySelectorAll(".sign-button").forEach((button) => button.addEventListener("click", signPlayer));
-$("#reset-game").addEventListener("click", () => { if (!window.confirm("Reset your season and start over?")) return; state = structuredClone(defaultState); saveState(); render(); });
-render();
-window.requestAnimationFrame(animatePitch);
+
+function resizeCanvas() { const bounds = canvas.getBoundingClientRect(); const ratio = Math.min(window.devicePixelRatio || 1, 2); canvas.width = Math.floor(bounds.width * ratio); canvas.height = Math.floor(bounds.height * ratio); context.setTransform(ratio, 0, 0, ratio, 0, 0); game.width = bounds.width; game.height = bounds.height; game.groundY = game.height * .72; resetBike(false); buildTerrain(); draw(); }
+function resetBike(clearRun = true) { if (clearRun) { game.score = 0; game.distance = 0; game.airTime = 0; game.flips = 0; } game.running = false; game.crashed = false; game.lastTime = 0; game.bike = { x: Math.min(160, game.width * .25), y: game.groundY - 28, vy: 0, angle: game.mode === "wheelie" ? -.08 : 0, angularVelocity: 0, speed: 0 }; setStatus("READY TO RIDE"); updateHud(); }
+function buildTerrain() { const points = []; for (let x = 0; x < game.width + 180; x += 18) { let y = game.groundY; if (game.mode === "jumps") { const jumpX = game.width * .55; const wave = Math.max(0, 1 - Math.abs(x - jumpX) / 130); y -= wave * wave * 95; const secondWave = Math.max(0, 1 - Math.abs(x - (game.width * .9)) / 115); y -= secondWave * secondWave * 62; } points.push({ x, y }); } game.terrain = points; }
+function terrainY(x) { if (!game.terrain.length) return game.groundY; const index = Math.max(0, Math.min(game.terrain.length - 2, Math.floor(x / 18))); const left = game.terrain[index]; const right = game.terrain[index + 1]; const amount = (x - left.x) / (right.x - left.x); return left.y + (right.y - left.y) * amount; }
+function setMode(mode) { game.mode = mode; modeButtons.forEach((button) => button.classList.toggle("active", button.dataset.mode === mode)); $("#mode-label").textContent = mode === "wheelie" ? "WHEELIE / STREET RUN" : "JUMPS / FLIP LINE"; $("#trick-label").textContent = mode === "wheelie" ? "BALANCE" : "FLIPS"; $("#game-message").textContent = mode === "wheelie" ? "Keep the front wheel up. A leans back, D leans forward." : "Launch the jumps. A and D rotate you in the air."; resetBike(); buildTerrain(); draw(); }
+function setStatus(text, live = false) { $("#run-status").textContent = text; $(".status-dot").classList.toggle("live", live); $("#canvas-message").querySelector("strong").textContent = text; $("#canvas-message").querySelector("span").textContent = game.running ? "A / D to control the bike" : "Press A or D to start riding"; }
+function updateHud() { $("#score-value").textContent = Math.floor(game.score).toLocaleString(); $("#best-value").textContent = Math.floor(game.best).toLocaleString(); $("#distance-value").textContent = `${Math.floor(game.distance)} m`; $("#trick-value").textContent = game.mode === "wheelie" ? `${Math.min(100, Math.max(0, Math.round((Math.abs(game.bike.angle) / .95) * 100)))}%` : `${game.flips} flip${game.flips === 1 ? "" : "s"}`; }
+function startIfNeeded() { if (!game.running && !game.crashed) { game.running = true; setStatus("RIDE LIVE", true); $("#canvas-message").style.opacity = "0"; } }
+function pressKey(key, pressed) { keys[key] = pressed; if (pressed) startIfNeeded(); }
+function update(delta) { const bike = game.bike; const dt = Math.min(delta / 16.67, 2); const steering = (keys.d ? 1 : 0) - (keys.a ? 1 : 0); if (!game.running) return; if (game.mode === "wheelie") updateWheelie(bike, steering, dt); else updateJumps(bike, steering, dt); game.distance += bike.speed * .045 * dt; game.score += bike.speed * .018 * dt; updateHud(); }
+function updateWheelie(bike, steering, dt) { bike.speed = Math.min(7.5, bike.speed + .035 * dt); bike.angularVelocity += steering * .008 * dt; bike.angularVelocity *= .94; bike.angle += bike.angularVelocity * dt; if (!keys.a && !keys.d) bike.angle += .0025 * dt; bike.y = terrainY(bike.x) - 28; if (bike.angle > 1.02 || bike.angle < -.45) crash("Too far forward. Find the balance point."); if (Math.abs(bike.angle) < .9) game.score += Math.max(0, .9 - Math.abs(bike.angle)) * .35 * dt; bike.x += bike.speed * dt; }
+function updateJumps(bike, steering, dt) { bike.speed = Math.min(8.5, bike.speed + .045 * dt); const ground = terrainY(bike.x); const grounded = bike.y >= ground - 29 && bike.vy >= 0; if (grounded) { bike.y = ground - 29; if (game.airTime > 0) { const rotation = Math.abs(bike.angle % (Math.PI * 2)); const clean = rotation < .28 || Math.abs(rotation - Math.PI * 2) < .28; if (!clean) { crash("Hard landing. Match the bike to the ramp."); return; } game.score += game.flips * 120 + 80; game.airTime = 0; game.flips = 0; } bike.vy = 0; bike.angularVelocity = -bike.angle * .12; } else { game.airTime += dt; bike.angularVelocity += steering * .012 * dt; bike.angularVelocity *= .995; bike.angle += bike.angularVelocity * dt; bike.vy += .34 * dt; if (Math.abs(bike.angle) > Math.PI * 2.4) crash("Too many rotations. Bring it back around."); } bike.y += bike.vy * dt; bike.x += bike.speed * dt; if (bike.x > game.width + 30) bike.x = 150; }
+function crash(message) { game.running = false; game.crashed = true; game.best = Math.max(game.best, Math.floor(game.score)); localStorage.setItem("dirtline-best", game.best); setStatus("RUN OVER"); $("#game-message").textContent = `${message} Press A or D to restart.`; $("#canvas-message").style.opacity = "1"; $("#canvas-message").querySelector("span").textContent = "Press A or D to restart"; }
+function loop(timestamp) { if (!game.lastTime) game.lastTime = timestamp; update(timestamp - game.lastTime); game.lastTime = timestamp; draw(); requestAnimationFrame(loop); }
+function draw() { context.clearRect(0, 0, game.width, game.height); drawBackground(); drawTerrain(); drawBike(); }
+function drawBackground() { const gradient = context.createLinearGradient(0, 0, 0, game.height); gradient.addColorStop(0, colors.sky); gradient.addColorStop(1, "#eaf1df"); context.fillStyle = gradient; context.fillRect(0, 0, game.width, game.height); context.fillStyle = colors.cloud; context.beginPath(); context.arc(game.width * .17, game.height * .22, 30, 0, Math.PI * 2); context.arc(game.width * .22, game.height * .2, 44, 0, Math.PI * 2); context.arc(game.width * .28, game.height * .23, 27, 0, Math.PI * 2); context.fill(); context.fillStyle = "rgba(54,117,100,.2)"; context.beginPath(); context.moveTo(0, game.groundY); context.quadraticCurveTo(game.width * .2, game.height * .5, game.width * .45, game.groundY); context.quadraticCurveTo(game.width * .7, game.height * .55, game.width, game.groundY); context.lineTo(game.width, game.height); context.lineTo(0, game.height); context.fill(); }
+function drawTerrain() { const points = game.terrain; if (!points.length) return; context.beginPath(); context.moveTo(0, game.height); context.lineTo(points[0].x, points[0].y); points.forEach((point) => context.lineTo(point.x, point.y)); context.lineTo(game.width, game.height); context.closePath(); context.fillStyle = colors.dirt; context.fill(); context.beginPath(); context.moveTo(points[0].x, points[0].y); points.forEach((point) => context.lineTo(point.x, point.y)); context.strokeStyle = colors.dirtDark; context.lineWidth = 5; context.stroke(); context.strokeStyle = "rgba(255,255,255,.16)"; context.lineWidth = 2; for (let x = 20; x < game.width; x += 75) { context.beginPath(); context.moveTo(x, terrainY(x) + 24); context.lineTo(x + 22, terrainY(x) + 18); context.stroke(); } }
+function drawBike() { const bike = game.bike; context.save(); context.translate(bike.x, bike.y); context.rotate(bike.angle); const wheelY = 20; drawWheel(-27, wheelY); drawWheel(27, wheelY); context.strokeStyle = colors.darkGreen; context.lineWidth = 5; context.lineCap = "round"; context.beginPath(); context.moveTo(-27, wheelY); context.lineTo(-6, -2); context.lineTo(27, wheelY); context.lineTo(7, 0); context.lineTo(-27, wheelY); context.moveTo(-6, -2); context.lineTo(7, 0); context.stroke(); context.fillStyle = colors.orange; context.beginPath(); context.moveTo(-14, -5); context.lineTo(12, -8); context.lineTo(22, 7); context.lineTo(-4, 10); context.closePath(); context.fill(); context.fillStyle = colors.yellow; context.beginPath(); context.arc(0, -17, 10, 0, Math.PI * 2); context.fill(); context.fillStyle = colors.ink; context.beginPath(); context.arc(0, -19, 10, Math.PI, Math.PI * 2); context.fill(); context.strokeStyle = colors.ink; context.lineWidth = 4; context.beginPath(); context.moveTo(9, -7); context.lineTo(21, -18); context.lineTo(31, -16); context.stroke(); context.restore(); }
+function drawWheel(x, y) { context.fillStyle = colors.ink; context.beginPath(); context.arc(x, y, 13, 0, Math.PI * 2); context.fill(); context.strokeStyle = "#ccd8cd"; context.lineWidth = 3; context.beginPath(); context.arc(x, y, 7, 0, Math.PI * 2); context.stroke(); }
+
+modeButtons.forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("keydown", (event) => { const key = event.key.toLowerCase(); if (key === "a" || key === "d") { event.preventDefault(); pressKey(key, true); } });
+window.addEventListener("keyup", (event) => { const key = event.key.toLowerCase(); if (key === "a" || key === "d") { event.preventDefault(); pressKey(key, false); } });
+document.querySelectorAll("[data-key]").forEach((button) => { const key = button.dataset.key; button.addEventListener("pointerdown", () => pressKey(key, true)); button.addEventListener("pointerup", () => pressKey(key, false)); button.addEventListener("pointerleave", () => pressKey(key, false)); });
+$("#reset-run").addEventListener("click", () => { resetBike(); $("#canvas-message").style.opacity = "1"; });
+setMode("wheelie"); resizeCanvas(); requestAnimationFrame(loop);
