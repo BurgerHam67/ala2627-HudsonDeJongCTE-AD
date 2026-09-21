@@ -864,19 +864,46 @@ kbd {
 }
 
 @keyframes batter-swing {
-  0%, 100% { transform: translateX(var(--batter-offset)) scale(.95) rotate(0); }
-  35% { transform: translateX(var(--batter-offset)) scale(.95) rotate(-8deg); }
-  67% { transform: translateX(var(--batter-offset)) scale(.95) rotate(17deg); }
+
+  0%,
+  100% {
+    transform: translateX(var(--batter-offset)) scale(.95) rotate(0);
+  }
+
+  35% {
+    transform: translateX(var(--batter-offset)) scale(.95) rotate(-8deg);
+  }
+
+  67% {
+    transform: translateX(var(--batter-offset)) scale(.95) rotate(17deg);
+  }
 }
 
 @keyframes bat-swing {
-  0%, 100% { transform: rotate(-38deg); }
-  35% { transform: rotate(-58deg); }
-  67% { transform: rotate(52deg); }
+
+  0%,
+  100% {
+    transform: rotate(-38deg);
+  }
+
+  35% {
+    transform: rotate(-58deg);
+  }
+
+  67% {
+    transform: rotate(52deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @media (max-width: 860px) {
