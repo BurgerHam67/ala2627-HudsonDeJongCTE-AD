@@ -5,6 +5,7 @@ const $ = (selector) => document.querySelector(selector);
 const pitchDuration = 1900;
 let pitchStart = performance.now();
 let pitchPhase = 0;
+let lastSwingPitch = -1;
 function loadState() { try { return { ...defaultState, ...JSON.parse(localStorage.getItem(gameKey)) }; } catch { return structuredClone(defaultState); } }
 function saveState() { localStorage.setItem(gameKey, JSON.stringify(state)); }
 function formatNumber(number) { return number.toLocaleString("en-US"); }
@@ -29,8 +30,17 @@ function animatePitch(now) {
   window.requestAnimationFrame(animatePitch);
 }
 function swing() {
+  const pitchAtSwing = Math.floor((performance.now() - pitchStart) / pitchDuration);
+  if (pitchAtSwing === lastSwingPitch) {
+    $("#play-by-play").textContent = "Wait for the next pitch.";
+    $("#multiplier").textContent = "Next pitch loading";
+    return;
+  }
+  lastSwingPitch = pitchAtSwing;
+  pitchPhase = ((performance.now() - pitchStart) % pitchDuration) / pitchDuration;
   const power = state.upgrades.power; const contact = state.upgrades.contact; const windowStart = Math.max(.5, .68 - contact * .025); const windowEnd = Math.min(.94, .82 + contact * .02); const wellTimed = pitchPhase >= windowStart && pitchPhase <= windowEnd; const early = pitchPhase < windowStart; const isHomer = wellTimed && Math.random() < Math.min(.98, .62 + contact * .08); const distance = 320 + Math.floor(Math.random() * 90) + power * 24 + (state.players.griffey ? 25 : 0); const earnedCoins = isHomer ? 2 + Math.floor(power / 2) : 0; const earnedFans = isHomer ? 8 + state.upgrades.stadium * 3 + (state.players.jackie ? 6 : 0) : 1;
-  state.homeRuns += isHomer ? 1 : 0; state.streak = isHomer ? state.streak + 1 : 0; state.coins += earnedCoins; state.fans += earnedFans; $("#last-distance").textContent = isHomer ? distance : "MISS"; $("#play-by-play").textContent = isHomer ? `CRACK! ${distance} feet and gone.` : (early ? "Too early. Let the pitch travel." : "Too late. Watch it into the mitt."); $("#multiplier").textContent = isHomer ? `+${earnedCoins} coins · +${earnedFans} fans` : "+1 fan";
+  const timingCenter = (windowStart + windowEnd) / 2; const perfect = isHomer && Math.abs(pitchPhase - timingCenter) <= (windowEnd - windowStart) * .2; const bonusCoins = perfect ? 2 : 0; const bonusFans = perfect ? 5 : 0;
+  state.homeRuns += isHomer ? 1 : 0; state.streak = isHomer ? state.streak + 1 : 0; state.coins += earnedCoins + bonusCoins; state.fans += earnedFans + bonusFans; $("#last-distance").textContent = isHomer ? distance : "MISS"; $("#play-by-play").textContent = perfect ? `PERFECT CONTACT! ${distance} feet and gone.` : (isHomer ? `CRACK! ${distance} feet and gone.` : (early ? "Too early. Let the pitch travel." : "Too late. Watch it into the mitt.")); $("#multiplier").textContent = isHomer ? `+${earnedCoins + bonusCoins} coins · +${earnedFans + bonusFans} fans` : "+1 fan";
   $(".diamond-panel").classList.remove("hit"); void $(".diamond-panel").offsetWidth; $(".diamond-panel").classList.add("hit"); $(".field").classList.remove("swinging"); void $(".field").offsetWidth; $(".field").classList.add("swinging"); window.setTimeout(() => $(".field").classList.remove("swinging"), 720); $("#ball").classList.remove("fly"); void $("#ball").offsetWidth; $("#ball").classList.add("fly"); saveState(); render();
 }
 function buyUpgrade(event) { const type = event.currentTarget.dataset.upgrade; const cost = upgradeCost(type); if (state.coins < cost) return; state.coins -= cost; state.upgrades[type] += 1; saveState(); render(); }
