@@ -4,197 +4,127 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HDSupplies | Elevated essentials</title>
-  <meta name="description"
-    content="HDSupplies curates premium streetwear essentials and modern staples with a refined, affordable edge.">
+  <title>Big Fly Baseball</title>
+  <meta name="description" content="Build a baseball powerhouse one homerun at a time.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
 </head>
 
 <body>
   <header class="site-header">
-    <a class="logo" href="#top" aria-label="HDSupplies home">HD<span>.</span></a>
-    <nav aria-label="Main navigation">
-      <a href="#drop">Shop</a>
-      <a href="#story">Our story</a>
-      <a href="#journal">Journal</a>
-      <a class="nav-cta" href="mailto:hudsondejong@yahoo.com">Contact</a>
-    </nav>
+    <a class="brand" href="#top" aria-label="Big Fly Baseball home"><span class="brand-mark">BF</span><span><strong>BIG
+          FLY</strong><small>BASEBALL CLUB</small></span></a>
+    <div class="header-status"><span class="live-dot"></span> Season 01 <span class="status-divider"></span> Rookie
+      League</div>
+    <button class="reset-button" id="reset-game" type="button">Reset season</button>
   </header>
-
   <main id="top">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow">HDSupplies / drop 01</p>
-        <h1 id="hero-title">Modern essentials<br><span>for the next rotation.</span></h1>
-        <p class="hero-intro">Curated streetwear built to look premium, feel effortless, and stretch your budget without
-          compromising on taste.</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#drop">Explore the drop</a>
-          <a class="button button-secondary" href="#story">Why HDSupplies</a>
-        </div>
-
-        <div class="hero-metrics" aria-label="Store metrics">
-          <div>
-            <strong>04</strong>
-            <span>signature pieces</span>
-          </div>
-          <div>
-            <strong>1.9k</strong>
-            <span>followers</span>
-          </div>
-          <div>
-            <strong>24h</strong>
-            <span>dispatch window</span>
-          </div>
-        </div>
+    <section class="scoreboard" aria-label="Team scoreboard">
+      <div>
+        <p class="eyebrow">Your ballclub</p>
+        <h1>Send it <em>deep.</em></h1>
+        <p class="hero-copy">Build your lineup, upgrade your swing, and chase the longest ball in the league.</p>
       </div>
-
-      <div class="hero-visual" aria-label="Featured product photo">
-        <div class="visual-card visual-card-main">
-          <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=85"
-            alt="Model in layered black streetwear with a premium look">
-          <div class="visual-badge">Fresh drop</div>
-        </div>
-        <div class="visual-card visual-card-floating">
-          <p>New arrival</p>
-          <strong>Utility Layer</strong>
-          <span>From $48</span>
-        </div>
+      <div class="scoreboard-numbers">
+        <div><span>Homeruns</span><strong id="home-runs">0</strong></div>
+        <div><span>Fans</span><strong id="fans">0</strong></div>
+        <div><span>Team OVR</span><strong id="team-ovr">61</strong></div>
       </div>
     </section>
-
-    <section class="features" aria-label="Brand features">
-      <article>
-        <span class="feature-index">01</span>
-        <h3>Built for daily wear</h3>
-        <p>Comfortable construction, durable fabrics, and versatile colour palettes that fit seamlessly into a real
-          wardrobe.</p>
-      </article>
-      <article>
-        <span class="feature-index">02</span>
-        <h3>Premium without the markup</h3>
-        <p>Thoughtful pricing on elevated essentials so your style keeps momentum without draining your wallet.</p>
-      </article>
-      <article>
-        <span class="feature-index">03</span>
-        <h3>Curated, not crowded</h3>
-        <p>Every piece is selected for shape, texture, and attitude to keep the collection intentional and sharp.</p>
-      </article>
-    </section>
-
-    <section class="drop" id="drop" aria-labelledby="drop-title">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Selected pieces</p>
-          <h2 id="drop-title">The first drop</h2>
+    <section class="game-layout" aria-label="Big Fly game">
+      <div class="diamond-panel">
+        <div class="panel-topline"><span>AT THE PLATE</span><span id="streak-label">0 HR streak</span></div>
+        <div class="field">
+          <div class="field-lines"></div>
+          <div class="scoreboard-sign"><span>BIG FLY</span><strong id="last-distance">READY?</strong><small>FEET</small>
+          </div>
+          <div class="pitcher"><span class="pitcher-head"></span><span class="pitcher-body"></span></div>
+          <div class="batter"><span class="batter-head"></span><span class="batter-body"></span><span
+              class="bat"></span></div>
+          <div class="ball" id="ball" aria-hidden="true"></div>
+          <button class="swing-button" id="swing-button" type="button"><span class="swing-icon">↗</span><span>SWING FOR
+              THE FENCES</span><small><kbd>SPACE</kbd> or click</small></button>
+          <div class="base base-home"></div>
+          <div class="base base-first"></div>
+          <div class="base base-second"></div>
+          <div class="base base-third"></div>
         </div>
-        <p class="section-detail">Four essentials / no filler</p>
+        <div class="game-foot"><span id="play-by-play">Step up to the plate.</span><span class="multiplier"
+            id="multiplier">+1 per swing</span></div>
       </div>
-
-      <div class="product-grid">
-        <article class="product-card product-card--wide">
-          <div class="product-image image-frame">
-            <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=1200&q=85"
-              alt="Neutral-toned streetwear layering pieces on a rack" loading="lazy">
-            <span class="product-label">01</span>
+      <aside class="control-panel">
+        <div class="tab-row"><a class="active" href="#upgrades">Upgrades</a><a href="#roster">Roster</a></div>
+        <section class="upgrade-section" id="upgrades" aria-labelledby="upgrade-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Make every swing count</p>
+              <h2 id="upgrade-title">Batting lab</h2>
+            </div><span class="currency"><span class="coin">$</span><strong id="coins">25</strong></span>
           </div>
-          <div class="product-meta">
-            <h3>Utility layers</h3>
-            <span>From $48</span>
+          <div class="upgrade-list">
+            <article class="upgrade-card">
+              <div class="upgrade-icon bat-icon">✦</div>
+              <div class="upgrade-info">
+                <h3>Contact</h3>
+                <p>More consistent barrels</p>
+                <div class="level-bar"><span id="contact-bar"></span></div>
+              </div><button class="upgrade-button" data-upgrade="contact" type="button"><span>LVL <b
+                    id="contact-level">1</b></span><strong id="contact-cost">10</strong></button>
+            </article>
+            <article class="upgrade-card">
+              <div class="upgrade-icon power-icon">↯</div>
+              <div class="upgrade-info">
+                <h3>Power</h3>
+                <p>Launch it farther</p>
+                <div class="level-bar"><span id="power-bar"></span></div>
+              </div><button class="upgrade-button" data-upgrade="power" type="button"><span>LVL <b
+                    id="power-level">1</b></span><strong id="power-cost">15</strong></button>
+            </article>
+            <article class="upgrade-card">
+              <div class="upgrade-icon crowd-icon">♟</div>
+              <div class="upgrade-info">
+                <h3>Stadium</h3>
+                <p>Grow your fanbase</p>
+                <div class="level-bar"><span id="stadium-bar"></span></div>
+              </div><button class="upgrade-button" data-upgrade="stadium" type="button"><span>LVL <b
+                    id="stadium-level">1</b></span><strong id="stadium-cost">20</strong></button>
+            </article>
           </div>
-        </article>
-
-        <article class="product-card">
-          <div class="product-image image-frame">
-            <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=900&q=85"
-              alt="Structured oversized jacket in black" loading="lazy">
-            <span class="product-label">02</span>
+        </section>
+        <section class="roster-section" id="roster" aria-labelledby="roster-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Stack the lineup</p>
+              <h2 id="roster-title">Sign a legend</h2>
+            </div><span class="roster-count" id="roster-count">1 / 3</span>
           </div>
-          <div class="product-meta">
-            <h3>Heavyweight outerwear</h3>
-            <span>From $72</span>
+          <div class="player-list">
+            <article class="player-card signed">
+              <div class="player-number">27</div>
+              <div class="player-info"><strong>Mike Trout</strong><span>Center Field · +5 power</span></div><span
+                class="signed-label">SIGNED</span>
+            </article>
+            <article class="player-card">
+              <div class="player-number">24</div>
+              <div class="player-info"><strong>Ken Griffey Jr.</strong><span>Center Field · +8 power</span></div><button
+                class="sign-button" data-player="griffey" type="button">$80</button>
+            </article>
+            <article class="player-card">
+              <div class="player-number">42</div>
+              <div class="player-info"><strong>Jackie Robinson</strong><span>Second Base · +6 fans</span></div><button
+                class="sign-button" data-player="jackie" type="button">$100</button>
+            </article>
           </div>
-        </article>
-
-        <article class="product-card">
-          <div class="product-image image-frame">
-            <img src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=900&q=85"
-              alt="Relaxed cream sweatshirt and cargo pants" loading="lazy">
-            <span class="product-label">03</span>
-          </div>
-          <div class="product-meta">
-            <h3>Everyday uniform</h3>
-            <span>From $36</span>
-          </div>
-        </article>
-
-        <article class="product-card">
-          <div class="product-image image-frame">
-            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=85"
-              alt="Fashion portrait showing monochrome styling and a soft neutral look" loading="lazy">
-            <span class="product-label">04</span>
-          </div>
-          <div class="product-meta">
-            <h3>Soft structure</h3>
-            <span>From $54</span>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="story" id="story" aria-labelledby="story-title">
-      <div class="story-copy">
-        <p class="eyebrow">Why HDSupplies</p>
-        <h2 id="story-title">Look expensive.<br><span>Spend intelligently.</span></h2>
-      </div>
-      <div class="story-text">
-        <p>HDSupplies was built around a simple idea: the clothes that define your style should not have to drain your
-          wallet. We source pieces with the right shape, weight, and energy, then make them easier to reach.</p>
-        <a class="text-link" href="mailto:hudsondejong@yahoo.com">Start a conversation <span
-            aria-hidden="true">→</span></a>
-      </div>
-    </section>
-
-    <section class="journal" id="journal" aria-labelledby="journal-title">
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow">Journal</p>
-          <h2 id="journal-title">Style notes from the studio</h2>
-        </div>
-      </div>
-
-      <div class="journal-grid">
-        <article>
-          <p class="journal-date">09 / 2026</p>
-          <h3>How to build a wardrobe that feels intentional</h3>
-          <a href="mailto:hudsondejong@yahoo.com">Read more</a>
-        </article>
-        <article>
-          <p class="journal-date">08 / 2026</p>
-          <h3>Three staples that instantly sharpen an outfit</h3>
-          <a href="mailto:hudsondejong@yahoo.com">Read more</a>
-        </article>
-        <article>
-          <p class="journal-date">07 / 2026</p>
-          <h3>Why texture matters more than loud branding</h3>
-          <a href="mailto:hudsondejong@yahoo.com">Read more</a>
-        </article>
-      </div>
+        </section>
+      </aside>
     </section>
   </main>
-
-  <footer class="site-footer">
-    <div>
-      <p class="footer-brand">HDSupplies</p>
-      <p>Built by Hudson De Jong</p>
-    </div>
-    <p>Made for the next rotation.</p>
-  </footer>
+  <footer class="site-footer"><span>BIG FLY BASEBALL</span><span>Play ball. Build a dynasty.</span></footer>
 </body>
 
 </html>
