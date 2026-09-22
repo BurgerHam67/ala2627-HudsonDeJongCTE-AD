@@ -1,152 +1,196 @@
-# ============================================================
-#  THE VAULT — a text adventure
-#
-#  This already works. Run it before you change anything:
-#
-#      python game.py
-#
-#  You are not building a game from nothing. You are taking one
-#  that runs and making it yours. That is how real software gets
-#  written — you almost never start from an empty file.
-#
-#  Everything in here uses only what you already know from last
-#  week: print(), input(), if / elif / else, and a while loop.
-#  There is nothing new to learn before you can start.
-# ============================================================
+"""THE VAULT: a small command-line adventure."""
 
-
-# ---- 1. STATE ------------------------------------------------
-# "State" is just the stuff the game has to remember while it runs.
-# Change these and the game starts differently — try it.
-
-player_name = ""          # we ask for this at the start
-room = "hall"             # where the player is right now
-has_key = False           # True or False — do they have the key?
-moves = 0                 # how many turns they have taken
-
-
-# ---- 2. HELPERS ----------------------------------------------
-# A function is a name for some lines you want to use more than
-# once. `def` makes one. Writing this once beats pasting it into
-# every room.
 
 def say(text):
-    """Print a message, then one blank line, so the screen breathes.
-
-    Use plain print() for lines that belong TOGETHER, and say() for the
-    last line of the thought. Calling say() on every line puts a gap
-    between each one and the screen looks broken.
-    """
     print(text)
     print()
 
 
 def ask():
-    """Ask the player what they want to do and hand back a tidy answer.
-
-    .strip() removes spaces they typed by accident.
-    .lower() means GO NORTH, go north and Go North all work the same.
-    Without these two, your game feels broken even when your logic is right.
-    """
     return input("> ").strip().lower()
 
 
-# ---- 3. THE OPENING ------------------------------------------
+def describe_room(room, has_lamp, has_key, has_gem, gate_open):
+    """Show the useful details of the room the player is exploring."""
+    if room == "hall":
+        print("THE DUSTY HALL")
+        print("A cracked portrait watches over a rug and three doorways.")
+        print("Exits: NORTH to the vault, EAST to the library, WEST to the cellar.")
+        if not has_key:
+            print("Something glints beneath the rug.")
+    elif room == "library":
+        print("THE SILENT LIBRARY")
+        print("Shelves lean together like tired old trees.")
+        print("Exits: WEST to the hall, EAST to the observatory.")
+        if not has_lamp:
+            print("A brass LAMP rests on a reading desk.")
+    elif room == "cellar":
+        print("THE FLOODED CELLAR")
+        print("Cold water covers the floor. A narrow tunnel disappears SOUTH.")
+        print("Exits: EAST to the hall, SOUTH to the crypt.")
+        if not has_key:
+            print("The water ripples around something metallic.")
+    elif room == "crypt":
+        print("THE CRYPT")
+        print("Stone doors line the walls. The air smells of rain and iron.")
+        print("Exits: NORTH to the cellar.")
+        if not has_gem:
+            print("A pale GEM glows inside an open stone coffin.")
+    elif room == "observatory":
+        print("THE OBSERVATORY")
+        if not has_lamp:
+            print("It is too dark to see. You need a lamp to explore safely.")
+        else:
+            print("Moonlight pours through the broken dome.")
+            print("Exits: WEST to the library, NORTH to the vault.")
+            if not gate_open:
+                print("A brass control panel is set into the floor.")
+    elif room == "vault":
+        print("THE VAULT")
+        print("A steel door waits beneath a ceiling painted with stars.")
+        print("Exits: SOUTH to the hall.")
 
-print("=" * 44)
-print("           THE VAULT")
-print("=" * 44)
+
+def show_inventory(has_key, has_lamp, has_gem):
+    items = []
+    if has_key:
+        items.append("brass key")
+    if has_lamp:
+        items.append("lamp")
+    if has_gem:
+        items.append("pale gem")
+    if items:
+        say("You are carrying: " + ", ".join(items) + ".")
+    else:
+        say("Your pockets are empty.")
+
+
+print("=" * 52)
+print("                    THE VAULT")
+print("=" * 52)
+print("A storm is closing in. Find the vault before the old house wakes.")
 print()
 
-player_name = input("What is your name, explorer? ").strip()
-if player_name == "":
-    player_name = "Nobody"          # they just pressed enter
+player_name = input("What is your name, explorer? ").strip() or "Nobody"
+room = "hall"
+has_key = False
+has_lamp = False
+has_gem = False
+gate_open = False
+moves = 0
+limit = 24
 
+say("Welcome, " + player_name + ". Type HELP for commands, or QUIT to leave.")
+describe_room(room, has_lamp, has_key, has_gem, gate_open)
 print()
-print("Welcome, " + player_name + ".")
-print("You are standing in a dusty hall. There is a door NORTH")
-print("and a rug on the floor you could LOOK under.")
-say("Type HELP if you get stuck, or QUIT to give up.")
-
-
-# ---- 4. THE GAME LOOP ----------------------------------------
-# while True means "keep going forever". The only way out is break.
-# Every turn: ask, then decide what that answer means.
 
 while True:
     command = ask()
-    moves = moves + 1
 
-    # -- commands that work anywhere ------------------------
-    if command == "quit":
-        say("You walk away. " + player_name + " lasted " + str(moves) + " moves.")
+    if command == "":
+        say("The house waits. Type HELP if you need a direction.")
+        continue
+
+    moves += 1
+
+    if moves >= limit:
+        say("The storm breaks through the roof. The house seals itself around you. Game over.")
         break
 
-    elif command == "help":
-        say("Try: LOOK, NORTH, SOUTH, TAKE KEY, OPEN VAULT, QUIT")
+    if command in ("quit", "exit"):
+        say("You escape into the storm after " + str(moves) + " moves. The vault remains sealed.")
+        break
 
-    # -- the hall -------------------------------------------
-    elif room == "hall":
-        if command == "look":
-            if has_key:
-                say("Just a rug, and the hole where the key was.")
-            else:
-                say("Under the rug: a small brass KEY.")
+    if command in ("help", "?"):
+        say("Commands: LOOK, GO NORTH/SOUTH/EAST/WEST, TAKE, INVENTORY, OPEN VAULT, QUIT")
+        continue
 
-        elif command == "take key":
-            if has_key:
-                say("You already have it.")
-            else:
-                has_key = True
-                say("You pocket the key. It is colder than it should be.")
+    if command in ("look", "l"):
+        describe_room(room, has_lamp, has_key, has_gem, gate_open)
+        print()
+        continue
 
-        elif command == "north":
-            room = "vault"
-            print("You step into a room with a huge steel door. The VAULT.")
-            say("There is a way back SOUTH.")
+    if command in ("inventory", "i", "items"):
+        show_inventory(has_key, has_lamp, has_gem)
+        continue
 
+    # Accept both "north" and the more natural "go north".
+    direction = command.replace("go ", "", 1)
+    if direction in ("n", "s", "e", "w"):
+        direction = {"n": "north", "s": "south", "e": "east", "w": "west"}[direction]
+
+    if direction in ("north", "south", "east", "west"):
+        destination = {
+            ("hall", "north"): "vault",
+            ("hall", "east"): "library",
+            ("hall", "west"): "cellar",
+            ("library", "west"): "hall",
+            ("library", "east"): "observatory",
+            ("cellar", "east"): "hall",
+            ("cellar", "south"): "crypt",
+            ("crypt", "north"): "cellar",
+            ("observatory", "west"): "library",
+            ("observatory", "north"): "vault",
+            ("vault", "south"): "hall",
+        }.get((room, direction))
+
+        if destination is None:
+            say("There is no open path that way.")
+        elif destination == "observatory" and not has_lamp:
+            say("The darkness beyond the library is absolute. Find a lamp first.")
+        elif destination == "vault" and not gate_open:
+            say("A hidden mechanism holds the vault entrance shut. Search the observatory.")
         else:
-            say("You cannot do that here.")
+            room = destination
+            describe_room(room, has_lamp, has_key, has_gem, gate_open)
+            print()
+        continue
 
-    # -- the vault ------------------------------------------
-    elif room == "vault":
-        if command == "look":
-            say("A steel door with a small keyhole. It is shut.")
-
-        elif command == "south":
-            room = "hall"
-            say("Back in the dusty hall.")
-
-        elif command == "open vault":
-            if has_key:
-                print("The key turns. The door swings open.")
-                print("Inside: absolutely nothing. Someone beat you here.")
-                say("You win anyway, " + player_name + " — in " + str(moves) + " moves.")
-                break
-            else:
-                say("It is locked. You need a key.")
-
+    if command in ("take", "take key", "get key") and room in ("hall", "cellar"):
+        if has_key:
+            say("You already have the brass key.")
         else:
-            say("You cannot do that here.")
+            has_key = True
+            say("You find a brass key. Its teeth are shaped like tiny stars.")
+        continue
 
+    if command in ("take lamp", "get lamp") and room == "library":
+        if has_lamp:
+            say("You already have the lamp.")
+        else:
+            has_lamp = True
+            say("You light the lamp. The flame burns blue and steady.")
+        continue
 
-# ============================================================
-#  NOW MAKE IT YOURS
-#
-#  Do these in order. Run the game after EVERY one — if it
-#  breaks you will know exactly which change did it.
-#
-#  1. Change the room descriptions so it is your world, not mine.
-#
-#  2. Add a third room. Copy the `elif room == "vault":` block,
-#     change the room name, and give the hall a way to reach it.
-#
-#  3. Add something to pick up, the way has_key works. A lamp?
-#     Then make one room too dark to LOOK in without it.
-#
-#  4. Add a limit: if moves gets past 20, something happens.
-#
-#  5. Give the player a real choice with two different endings.
-#
-#  COMMIT AFTER EACH ONE. That is your undo button.
-# ============================================================
+    if command in ("take gem", "get gem") and room == "crypt":
+        if has_gem:
+            say("You already have the gem.")
+        else:
+            has_gem = True
+            say("You lift the gem. Somewhere above you, a lock clicks open.")
+        continue
+
+    if command in ("use panel", "activate panel", "open panel") and room == "observatory":
+        if not has_lamp:
+            say("You cannot see the control panel in the dark.")
+        elif has_gem:
+            gate_open = True
+            say("The gem fits the panel. Brass gears turn, and the vault gate unlocks.")
+        else:
+            say("The panel has a gem-shaped socket. Something in the crypt may fit it.")
+        continue
+
+    if command in ("open vault", "enter vault") and room == "vault":
+        if has_key:
+            if has_gem:
+                print("The star-key turns. The vault opens onto a room full of sunrise.")
+                say("You leave with the treasure and the house's secrets. You win in " + str(moves) + " moves!")
+            else:
+                print("The star-key turns. Inside is a single locked glass case.")
+                say("You found the vault, but the true treasure is still hidden. You escape with a mystery.")
+            break
+        say("The vault accepts a key, but you do not have one.")
+        continue
+
+    say("That command does not work here. Try LOOK or HELP.")
+
